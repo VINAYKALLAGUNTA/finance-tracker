@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f766e">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>Daily Finance Tracker</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#14181f;--mut:#667085;--line:#e4e7ec;--brand:#0f766e;--brand-ink:#fff;--pos:#067647;--neg:#b42318;--warn:#b54708;--track:#e9edf2}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1116;--card:#171b22;--ink:#eef1f5;--mut:#97a0ad;--line:#262c36;--brand:#2dd4bf;--brand-ink:#04211e;--pos:#4ade80;--neg:#f87171;--warn:#fbbf24;--track:#262c36}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:calc(88px + env(safe-area-inset-bottom))}
+header{padding:calc(14px + env(safe-area-inset-top)) 16px 4px;font-weight:700;font-size:20px}
+main{max-width:640px;margin:0 auto;padding:0 16px}
+h3{margin:20px 4px 8px;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--mut)}
+h4.day{margin:14px 0 2px;font-size:12px;color:var(--mut);font-weight:600}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.card.sm{padding:10px 12px}
+.hero{background:var(--brand);color:var(--brand-ink);border-radius:18px;padding:18px;margin-top:8px}
+.hero .s{opacity:.85}
+.big{font-size:32px;font-weight:700;margin:2px 0 10px;letter-spacing:-.01em}
+.chips{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px}
+.hero .pos,.hero .neg{color:inherit}
+.s{font-size:13px;color:var(--mut)}
+.pos{color:var(--pos)}.neg{color:var(--neg)}.mut{color:var(--mut)}
+.accs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.acc{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-width:0}
+.acc .v{font-weight:650;font-size:16px;overflow-wrap:anywhere}
+.row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.grow{flex:1;min-width:0}.t{font-weight:600}.row .s{overflow-wrap:anywhere}
+.amt{font-weight:650;white-space:nowrap}
+.empty{color:var(--mut);margin:8px 0;text-align:center}
+.alert{margin-top:10px;padding:10px 12px;border-radius:12px;font-size:14px;border:1px solid}
+.alert.warn{color:var(--warn);border-color:var(--warn)}
+.alert.over{color:var(--neg);border-color:var(--neg)}
+.mnav{display:flex;align-items:center;justify-content:space-between;margin:12px 0}
+button{font:inherit;color:inherit;cursor:pointer}
+button.icon{background:none;border:0;font-size:20px;padding:6px 10px;border-radius:10px;color:var(--mut);min-width:40px;min-height:40px}
+button.icon:hover{background:var(--track)}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.grid3 .v{font-weight:650;font-size:14px;overflow-wrap:anywhere}
+.chart{width:100%;height:90px;display:block}.chart rect{fill:var(--brand)}
+.axis{display:flex;justify-content:space-between;font-size:11px;color:var(--mut);margin-top:2px}
+.bar{margin:10px 0}.bl{display:flex;justify-content:space-between;gap:8px;font-size:14px;margin-bottom:4px}
+.track{height:8px;background:var(--track);border-radius:99px;overflow:hidden}
+.fill{height:100%;background:var(--brand);border-radius:99px}
+.fill.warn{background:var(--warn)}.fill.over{background:var(--neg)}
+button.link{background:none;border:0;color:var(--mut);font-size:12px;padding:4px 0;text-decoration:underline}
+.form{display:flex;flex-direction:column;gap:12px}
+label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mut)}
+input,select{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;min-height:44px}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
+button.primary,button.secondary,button.danger{border-radius:12px;padding:12px;font-weight:600;border:1px solid var(--line);min-height:46px}
+button.primary{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+button.secondary{background:var(--card)}
+button.danger{background:var(--card);color:var(--neg);border-color:var(--neg)}
+.accedit{padding:10px 0;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+.accedit:last-child{border-bottom:0}
+.hint{font-size:13px;color:var(--mut);margin:4px 4px 8px}
+.file input{padding:8px}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom));z-index:5}
+nav button{background:none;border:0;flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--mut);padding:6px 0;min-height:48px;border-radius:10px}
+nav button span{font-size:19px;line-height:1}
+nav button.on{color:var(--brand);font-weight:700}
+#fab{position:fixed;right:18px;bottom:calc(78px + env(safe-area-inset-bottom));width:58px;height:58px;border-radius:50%;border:0;background:var(--brand);color:var(--brand-ink);font-size:32px;line-height:1;box-shadow:0 6px 18px rgba(0,0,0,.25);z-index:6}
+#scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .2s;z-index:10}
+#scrim.open{opacity:1;pointer-events:auto}
+#sheet{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-radius:20px 20px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom));transform:translateY(105%);transition:transform .25s;z-index:11;max-height:92vh;overflow:auto;max-width:640px;margin:0 auto}
+#sheet.open{transform:none}
+.sh{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.sh b{font-size:18px}
+#seg{display:flex;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:3px;margin-bottom:12px}
+#seg button{flex:1;border:0;background:none;padding:9px;border-radius:9px;font-weight:600;color:var(--mut)}
+#seg button.on{background:var(--brand);color:var(--brand-ink)}
+#amountWrap input{font-size:26px;font-weight:700}
+[hidden]{display:none!important}
+#toast{position:fixed;left:50%;bottom:calc(150px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:99px;font-size:14px;opacity:0;pointer-events:none;transition:.2s;z-index:20;max-width:90vw;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%)}
+#toast.bad{background:var(--neg);color:#fff}#toast.warn{background:var(--warn);color:#fff}
+</style>
+</head>
+<body>
+<header>Daily Finance</header>
+<main id="view" aria-live="polite"></main>
+
+<button id="fab" aria-label="Add transaction">+</button>
+
+<nav id="nav" aria-label="Sections">
+  <button data-tab="home"><span>🏠</span>Home</button>
+  <button data-tab="history"><span>🧾</span>History</button>
+  <button data-tab="summary"><span>📊</span>Summary</button>
+  <button data-tab="budgets"><span>🎯</span>Budgets</button>
+  <button data-tab="accounts"><span>🏦</span>Accounts</button>
+</nav>
+
+<div id="scrim"></div>
+<div id="sheet" role="dialog" aria-modal="true" aria-label="Add transaction">
+  <div class="sh"><b>Add transaction</b><button class="icon" id="close" aria-label="Close">✕</button></div>
+  <div id="seg">
+    <button type="button" data-type="expense">Expense</button>
+    <button type="button" data-type="income">Income</button>
+    <button type="button" data-type="transfer">Transfer</button>
+  </div>
+  <form id="addForm" class="form" autocomplete="off">
+    <label id="amountWrap">Amount (₹)<input id="fAmount" inputmode="decimal" placeholder="0" required></label>
+    <label id="lblAcc">Account<select id="fAcc"></select></label>
+    <label id="rowTo" hidden>To account<select id="fTo"></select></label>
+    <label id="rowCat">Category<select id="fCat"></select></label>
+    <label>Date<input id="fDate" type="date" required></label>
+    <label>Note (optional)<input id="fNote" maxlength="120" placeholder="e.g. lunch with friends"></label>
+    <button class="primary" type="submit">Save</button>
+  </form>
+</div>
+<div id="toast" role="status"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
